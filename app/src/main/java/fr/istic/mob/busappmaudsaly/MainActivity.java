@@ -1,7 +1,10 @@
 package fr.istic.mob.busappmaudsaly;
 
+import android.app.Notification;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -27,11 +30,12 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
-        SiteConsultation sc = new SiteConsultation();
-        Intent intent = new Intent();
-        sc.onBind(intent);
-        sc.startService(intent);
-
+        Intent intent = new Intent(MainActivity.this, SiteConsultation.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent);
+        }
+        else {
+            startService(intent);
+        }
     }
-
 }

@@ -1,8 +1,10 @@
 package fr.istic.mob.busappmaudsaly;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +12,8 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+
+import androidx.annotation.Nullable;
 
 /**
  * @author Maud Garcon & Saly Knab
@@ -34,8 +38,10 @@ public class SiteConsultation extends Service {
     private String contenu;
     private BufferedReader br;
 
-    public SiteConsultation() {
+    private static final int forgroundId = 55544433;
+    private Notification notification;
 
+    public SiteConsultation() {
         try {
             url = new URL("https://data.explore.star.fr/api/records/1.0/search/?dataset=tco-busmetro-horaires-gtfs-versions-td");
         } catch (MalformedURLException e) {
@@ -44,7 +50,8 @@ public class SiteConsultation extends Service {
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
+    public int onStartCommand(Intent intent, int flags, int startID) {
+/*
         try {
             br = new BufferedReader(new InputStreamReader(url.openStream()));
             contenu = br.readLine();
@@ -52,6 +59,20 @@ public class SiteConsultation extends Service {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        throw new UnsupportedOperationException("Not yet implemented");
+        */
+        startForeground(forgroundId, notification);
+        Toast.makeText(this, "Services ok", Toast.LENGTH_LONG).show();
+        return super.onStartCommand(intent, flags, startID);
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
     }
 }

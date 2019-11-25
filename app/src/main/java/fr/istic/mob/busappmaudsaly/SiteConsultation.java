@@ -73,14 +73,6 @@ public class SiteConsultation extends Service{
         msg.arg1 = startID;
         mServiceHandler.sendMessage(msg);
 
-        try {
-            br = new BufferedReader(new InputStreamReader(url.openStream()));
-            contenu = br.readLine();
-            System.out.println(contenu);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         Toast.makeText(this, "Services ok", Toast.LENGTH_LONG).show();
         return START_NOT_STICKY;
     }
@@ -119,19 +111,19 @@ public class SiteConsultation extends Service{
             super(looper);
         }
 
-        /*
+
         @Override
         public void handleMessage(Message msg){
             try{
-                createNotificationChannel();
-                //Notification notification = new NotificationCompat.Builder().setContentTitle("Notif").build();
-                startForeground(1, notification);
-            }catch (){
+                br = new BufferedReader(new InputStreamReader(url.openStream()));
+                contenu = br.readLine();
+                System.out.println(contenu);
+            }catch (IOException e){
                 Thread.currentThread().interrupt();
+                e.printStackTrace();
             }
             stopSelf(msg.arg1);
         }
 
-         */
     }
 }

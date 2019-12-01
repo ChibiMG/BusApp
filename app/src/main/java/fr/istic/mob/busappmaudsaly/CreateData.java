@@ -1,19 +1,16 @@
 package fr.istic.mob.busappmaudsaly;
 
+import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.Service;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
-import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -25,48 +22,24 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-/**
- * @author Maud Garcon & Saly Knab
- *
- * Service qui consulte le site : https://data.explore.star.fr/explore/dataset/tco-busmetro-horaires-gtfs-versions-td/export/
- * On recupere : https://data.explore.star.fr/api/records/1.0/search/?dataset=tco-busmetro-horaires-gtfs-versions-td
- *
- * Qui regarde si on nouveau fichier CSV est disponible
- *
- * TODO : rechercher comment trouver le nouveau fihcier csv dispo sur le site
- * TODO : faire une notification comme quoi nouveau csv
- * TODO : cliqué et ouvre l'activity TelechargementActivity
- * TODO : enregister la verion (pas dans le service)
- * TODO : service qui regarde de temps en temps si nouvelle version (dans ce cas si tel echou ou aura toujours pas la bonne version donc une nouvelle notif plus tard)
- * TODO : test : lors de l'installation on télécharge automatiquement le 1 fichier JSON (mais pas zip qui est dedans)
- * TODO : le service se lance au démarrage du téléphone
- * TODO : appelle réseau en periodique : workmanager
- */
-
-public class SiteConsultation extends Service{
+public class CreateData extends IntentService {
 
     private URL url;
+
+    private Notification notification;
 
     private String CHANNEL_ID = "FSC";
 
     private Looper mServiceLooper;
-    private ServiceHandler mServiceHandler;
+    private CreateData.ServiceHandler myServiceHandler;
 
-    private Notification notification;
-
-    private Map<String, String> ids;
-    private Map<String, String> recordids;
-
-    public SiteConsultation() {
-        ids = new HashMap<>();
+    public CreateData() {
+        super("CreateData");
         try {
             url = new URL("https://data.explore.star.fr/api/records/1.0/search/?dataset=tco-busmetro-horaires-gtfs-versions-td");
         } catch (MalformedURLException e) {
@@ -74,28 +47,22 @@ public class SiteConsultation extends Service{
         }
     }
 
-    @Override
     public int onStartCommand(Intent intent, int flags, int startID) {
         createNotificationChannel();
         notification = new NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle("Notif").build();
         startForeground(1, notification);
-
-        Message msg = mServiceHandler.obtainMessage();
+        Message msg = myServiceHandler.obtainMessage();
         msg.arg1 = startID;
-        mServiceHandler.sendMessage(msg);
+        myServiceHandler.sendMessage(msg);
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        
 
-        Toast.makeText(this, "Services ok", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "BDD ok", Toast.LENGTH_LONG).show();
         return START_NOT_STICKY;
     }
 
-    @Nullable
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    protected void onHandleIntent(@Nullable Intent intent) {
+
     }
 
     @Override
@@ -103,7 +70,7 @@ public class SiteConsultation extends Service{
         HandlerThread thead = new HandlerThread("SSA", Process.THREAD_PRIORITY_BACKGROUND);
         thead.start();
         mServiceLooper = thead.getLooper();
-        mServiceHandler = new ServiceHandler(mServiceLooper);
+        myServiceHandler = new CreateData.ServiceHandler(mServiceLooper);
         //super.onCreate();
     }
 
@@ -138,25 +105,12 @@ public class SiteConsultation extends Service{
                 contenu = br.readLine();
                 json = new JSONObject(contenu);
                 array = new JSONArray(json.getString("records"));
-                recordids = new HashMap<>();
-
-                for (int i = 0; i < array.length(); i++){
-                    JSONObject obj = new JSONObject(array.getString(i));
-                    recordids.put(obj.getString("recordid"), obj.getString("url"));
-                }
-                if (!recordids.containsKey(ids.keySet())){
-                    ids.clear();
-                    ids.putAll(recordids);
-                }
-
-            }catch (IOException e){
-                Thread.currentThread().interrupt();
+                } catch (JSONException e) {
                 e.printStackTrace();
-            }catch (JSONException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
             stopSelf(msg.arg1);
         }
-
     }
 }

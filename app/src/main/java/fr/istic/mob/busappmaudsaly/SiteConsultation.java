@@ -65,31 +65,21 @@ public class SiteConsultation extends Service{
     private Map<String, String> ids;
     private Map<String, String> recordids;
 
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
+
+    SharedPreferences sharedPreferences1;
+    SharedPreferences.Editor editor1;
+
     public SiteConsultation() {
+        recordids = new HashMap<>();
         ids = new HashMap<>();
+
         try {
             url = new URL("https://data.explore.star.fr/api/records/1.0/search/?dataset=tco-busmetro-horaires-gtfs-versions-td");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startID) {
-        createNotificationChannel();
-        notification = new NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle("Notif").build();
-        startForeground(1, notification);
-
-        Message msg = mServiceHandler.obtainMessage();
-        msg.arg1 = startID;
-        mServiceHandler.sendMessage(msg);
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        
-
-        Toast.makeText(this, "Services ok", Toast.LENGTH_LONG).show();
-        return START_NOT_STICKY;
     }
 
     @Nullable
@@ -100,11 +90,26 @@ public class SiteConsultation extends Service{
 
     @Override
     public void onCreate() {
+        super.onCreate();
         HandlerThread thead = new HandlerThread("SSA", Process.THREAD_PRIORITY_BACKGROUND);
         thead.start();
         mServiceLooper = thead.getLooper();
         mServiceHandler = new ServiceHandler(mServiceLooper);
-        //super.onCreate();
+
+        createNotificationChannel();
+        notification = new NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle("Notif").setPriority(Notification.PRIORITY_DEFAULT).build();
+        startForeground(1, notification);
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = sharedPreferences.edit();
+
+        sharedPreferences1 = PreferenceManager.getDefaultSharedPreferences(this);
+        editor1 = sharedPreferences.edit();
+
+        Message msg = mServiceHandler.obtainMessage();
+        mServiceHandler.sendMessage(msg);
+
+        Toast.makeText(this, "Services ok", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -129,24 +134,23 @@ public class SiteConsultation extends Service{
 
         @Override
         public void handleMessage(Message msg){
-            String contenu;
-            BufferedReader br;
-            JSONObject json;
-            JSONArray array;
             try{
-                br = new BufferedReader(new InputStreamReader(url.openStream()));
-                contenu = br.readLine();
-                json = new JSONObject(contenu);
-                array = new JSONArray(json.getString("records"));
-                recordids = new HashMap<>();
+                BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+                String contenu = br.readLine();
+                JSONObject json = new JSONObject(contenu);
+                JSONArray array = new JSONArray(json.getString("records"));
+                recordids.clear();
 
                 for (int i = 0; i < array.length(); i++){
-                    JSONObject obj = new JSONObject(array.getString(i));
-                    recordids.put(obj.getString("recordid"), obj.getString("url"));
-                }
-                if (!recordids.containsKey(ids.keySet())){
-                    ids.clear();
-                    ids.putAll(recordids);
+                    JSONObject tab = new JSONObject(array.getString(i));
+                    String recordid = tab.getString("recordid");
+
+                    JSONObject fields = tab.getJSONObject("fields");
+                    String url = fields.getString("url");
+
+                    editor.putString(recordid,url);
+                    editor.commit();
+                    recordids.put(tab.getString("recordid"), fields.getString("url"));
                 }
 
             }catch (IOException e){
@@ -156,7 +160,23 @@ public class SiteConsultation extends Service{
                 e.printStackTrace();
             }
             stopSelf(msg.arg1);
+
+            notificationMAJ();
         }
 
+    }
+
+    public void notificationMAJ(){
+        if (!sharedPreferences.getAll().containsKey(sharedPreferences1.getAll().keySet())){
+            NotificationChannel serviceChannel = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                serviceChannel = new NotificationChannel("saly", "saly", NotificationManager.IMPORTANCE_DEFAULT);
+                NotificationManager manager = getSystemService(NotificationManager.class);
+                manager.createNotificationChannel(serviceChannel);
+            }
+            notification = new NotificationCompat.Builder(this, "saly").setContentTitle("Mise à jour disponible").setContentText("Mettre à jour les horaires des bus").build();
+            startForeground(2, notification);
+            System.out.println("Je suis ici");
+        }
     }
 }

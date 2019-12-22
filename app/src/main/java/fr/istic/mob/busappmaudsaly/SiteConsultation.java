@@ -3,6 +3,7 @@ package fr.istic.mob.busappmaudsaly;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,13 +26,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 /**
  * @author Maud Garcon & Saly Knab
@@ -39,42 +39,48 @@ import androidx.core.app.NotificationCompat;
  * Service qui consulte le site : https://data.explore.star.fr/explore/dataset/tco-busmetro-horaires-gtfs-versions-td/export/
  * On recupere : https://data.explore.star.fr/api/records/1.0/search/?dataset=tco-busmetro-horaires-gtfs-versions-td
  *
- * Qui regarde si on nouveau fichier CSV est disponible
+ * Il regarde si on nouveau fichier CSV est disponible.
  *
- * TODO : rechercher comment trouver le nouveau fihcier csv dispo sur le site
- * TODO : faire une notification comme quoi nouveau csv
- * TODO : cliqué et ouvre l'activity TelechargementActivity
  * TODO : enregister la verion (pas dans le service)
- * TODO : service qui regarde de temps en temps si nouvelle version (dans ce cas si tel echou ou aura toujours pas la bonne version donc une nouvelle notif plus tard)
- * TODO : test : lors de l'installation on télécharge automatiquement le 1 fichier JSON (mais pas zip qui est dedans)
+ * TODO : test : lors de l'installation on télécharge automatiquement le 1 fichier JSON (mais pas zip qui est dedans) ?
  * TODO : le service se lance au démarrage du téléphone
- * TODO : appelle réseau en periodique : workmanager
+ * TODO : appelle réseau en periodique : workmanager => service qui regarde de temps en temps si nouvelle version (dans ce cas si tel echou ou aura toujours pas la bonne version donc une nouvelle notif plus tard)
  */
 
 public class SiteConsultation extends Service{
 
+    //URL à consulter
     private URL url;
 
+    //Channel IDs
     private String CHANNEL_ID = "FSC";
+    private String CHANNEL_ID1 = "ABC";
 
     private Looper mServiceLooper;
     private ServiceHandler mServiceHandler;
 
+    //notification du service
     private Notification notification;
 
+    //notification de la mise à jour
+    private Notification notificationMAJ;
+
+    //ID actuels
+    // TODO ici ou pas ?
     private Map<String, String> ids;
+    SharedPreferences sharedPreferencesIDs;
+    SharedPreferences.Editor editorIDs;
+
+    //Id a verifier
     private Map<String, String> recordids;
-
-    SharedPreferences sharedPreferences;
-    SharedPreferences.Editor editor;
-
-    SharedPreferences sharedPreferences1;
-    SharedPreferences.Editor editor1;
+    SharedPreferences sharedPreferencesRIDs;
+    SharedPreferences.Editor editor1RIDs;
 
     public SiteConsultation() {
         recordids = new HashMap<>();
         ids = new HashMap<>();
 
+        //URL a verifier
         try {
             url = new URL("https://data.explore.star.fr/api/records/1.0/search/?dataset=tco-busmetro-horaires-gtfs-versions-td");
         } catch (MalformedURLException e) {
@@ -91,20 +97,23 @@ public class SiteConsultation extends Service{
     @Override
     public void onCreate() {
         super.onCreate();
+        //Creation du thread
         HandlerThread thead = new HandlerThread("SSA", Process.THREAD_PRIORITY_BACKGROUND);
         thead.start();
         mServiceLooper = thead.getLooper();
         mServiceHandler = new ServiceHandler(mServiceLooper);
 
+        //Notification du service
         createNotificationChannel();
-        notification = new NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle("Notif").setPriority(Notification.PRIORITY_DEFAULT).build();
+        notification = new NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle("Service en route").setPriority(Notification.PRIORITY_DEFAULT).build();
         startForeground(1, notification);
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        editor = sharedPreferences.edit();
+        sharedPreferencesIDs = PreferenceManager.getDefaultSharedPreferences(this);
+        editorIDs = sharedPreferencesIDs.edit();
 
-        sharedPreferences1 = PreferenceManager.getDefaultSharedPreferences(this);
-        editor1 = sharedPreferences.edit();
+        //TODO : ici ou pas ?
+        sharedPreferencesRIDs = PreferenceManager.getDefaultSharedPreferences(this);
+        editor1RIDs = sharedPreferencesIDs.edit();
 
         Message msg = mServiceHandler.obtainMessage();
         mServiceHandler.sendMessage(msg);
@@ -117,6 +126,7 @@ public class SiteConsultation extends Service{
         super.onDestroy();
     }
 
+    //Fonction de la notification channel
     private void createNotificationChannel(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel serviceChannel = new NotificationChannel(CHANNEL_ID, "FSC", NotificationManager.IMPORTANCE_DEFAULT);
@@ -141,6 +151,7 @@ public class SiteConsultation extends Service{
                 JSONArray array = new JSONArray(json.getString("records"));
                 recordids.clear();
 
+                //Ajouter les recordIDs
                 for (int i = 0; i < array.length(); i++){
                     JSONObject tab = new JSONObject(array.getString(i));
                     String recordid = tab.getString("recordid");
@@ -148,8 +159,8 @@ public class SiteConsultation extends Service{
                     JSONObject fields = tab.getJSONObject("fields");
                     String url = fields.getString("url");
 
-                    editor.putString(recordid,url);
-                    editor.commit();
+                    editorIDs.putString(recordid,url);
+                    editorIDs.commit();
                     recordids.put(tab.getString("recordid"), fields.getString("url"));
                 }
 
@@ -161,22 +172,28 @@ public class SiteConsultation extends Service{
             }
             stopSelf(msg.arg1);
 
+            //Notification de MAJ
             notificationMAJ();
         }
 
     }
 
+    //Fonction de la notification de MAJ
     public void notificationMAJ(){
-        if (!sharedPreferences.getAll().containsKey(sharedPreferences1.getAll().keySet())){
+        //Si recordIDs != de IDs)
+        if (!sharedPreferencesIDs.getAll().containsKey(sharedPreferencesRIDs.getAll().keySet())){
             NotificationChannel serviceChannel = null;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                serviceChannel = new NotificationChannel("saly", "saly", NotificationManager.IMPORTANCE_DEFAULT);
+                serviceChannel = new NotificationChannel(CHANNEL_ID1, "ABC", NotificationManager.IMPORTANCE_DEFAULT);
                 NotificationManager manager = getSystemService(NotificationManager.class);
                 manager.createNotificationChannel(serviceChannel);
             }
-            notification = new NotificationCompat.Builder(this, "saly").setContentTitle("Mise à jour disponible").setContentText("Mettre à jour les horaires des bus").build();
-            startForeground(2, notification);
-            System.out.println("Je suis ici");
+            Intent intent = new Intent(this, TelechargementActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+            notification = new NotificationCompat.Builder(this, CHANNEL_ID1).setContentTitle("Mise à jour disponible").setContentText("Mettre à jour les horaires des bus").setSmallIcon(R.drawable.ic_update_black_24dp).setContentIntent(pendingIntent).setAutoCancel(true).build();
+            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+            notificationManagerCompat.notify(2, notification);
         }
     }
 }

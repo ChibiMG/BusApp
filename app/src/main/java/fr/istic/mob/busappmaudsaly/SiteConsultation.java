@@ -14,7 +14,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
-import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -66,19 +65,15 @@ public class SiteConsultation extends Service{
     private Notification notificationMAJ;
 
     //ID actuels
-    // TODO ici ou pas ?
-    private Map<String, String> ids;
-    SharedPreferences sharedPreferencesIDs;
-    SharedPreferences.Editor editorIDs;
+    private Map<String, String> currentIDs;
 
     //Id a verifier
     private Map<String, String> recordids;
     SharedPreferences sharedPreferencesRIDs;
-    SharedPreferences.Editor editor1RIDs;
+    SharedPreferences.Editor editorNewIDs;
 
     public SiteConsultation() {
         recordids = new HashMap<>();
-        ids = new HashMap<>();
 
         //URL a verifier
         try {
@@ -108,12 +103,12 @@ public class SiteConsultation extends Service{
         notification = new NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle("Service en route").setPriority(Notification.PRIORITY_DEFAULT).build();
         startForeground(1, notification);
 
-        //TODO : ici ou pas ?
-        sharedPreferencesIDs = PreferenceManager.getDefaultSharedPreferences(this);
-        editorIDs = sharedPreferencesIDs.edit();
+        //Récuperer ids actuels
+        currentIDs = (Map<String, String>) getSharedPreferences(getString(R.string.Current_Ids),0).getAll();
 
-        sharedPreferencesRIDs = PreferenceManager.getDefaultSharedPreferences(this);
-        editor1RIDs = sharedPreferencesRIDs.edit();
+        //Pour New IDs
+        sharedPreferencesRIDs = getSharedPreferences(getString(R.string.New_Ids), 0);
+        editorNewIDs = sharedPreferencesRIDs.edit();
 
         Message msg = mServiceHandler.obtainMessage();
         mServiceHandler.sendMessage(msg);
@@ -159,8 +154,8 @@ public class SiteConsultation extends Service{
                     JSONObject fields = tab.getJSONObject("fields");
                     String url = fields.getString("url");
 
-                    editorIDs.putString(recordid,url);
-                    editorIDs.commit();
+                    editorNewIDs.putString(recordid,url);
+                    editorNewIDs.commit();
                     recordids.put(tab.getString("recordid"), fields.getString("url"));
                 }
 
@@ -181,7 +176,7 @@ public class SiteConsultation extends Service{
     //Fonction de la notification de MAJ
     public void notificationMAJ(){
         //Si recordIDs != de IDs)
-        if (!sharedPreferencesIDs.getAll().containsKey(sharedPreferencesRIDs.getAll().keySet())){
+        if (!currentIDs.containsKey(sharedPreferencesRIDs.getAll().keySet())){
             NotificationChannel serviceChannel = null;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 serviceChannel = new NotificationChannel(CHANNEL_ID1, "ABC", NotificationManager.IMPORTANCE_DEFAULT);

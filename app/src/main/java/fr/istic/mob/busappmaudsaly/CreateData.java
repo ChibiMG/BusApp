@@ -5,7 +5,9 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
+import android.preference.PreferenceManager;
 
 import java.util.Map;
 
@@ -20,8 +22,12 @@ public class CreateData extends IntentService {
     //notification du service
     private Notification notification;
 
-    //Map recordIDs
-    private Map<String, String> recordIDs;
+    //CurentIDs
+    SharedPreferences sharedPreferencesCurrentIDs;
+    SharedPreferences.Editor editorIDs;
+
+    //Map NewIDs
+    private Map<String, String> newIDs;
 
     public CreateData() {
         super("CreateData");
@@ -36,8 +42,12 @@ public class CreateData extends IntentService {
         notification = new NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle("Service en route").setPriority(Notification.PRIORITY_DEFAULT).build();
         startForeground(1, notification);
 
+        //Creation des IDs actuels
+        sharedPreferencesCurrentIDs = getSharedPreferences(getString(R.string.Current_Ids), 0);
+        editorIDs = sharedPreferencesCurrentIDs.edit();
+
         //Recuperation des RecordIDs
-        recordIDs = getSharedPreferences(sharedPreferencesRecordIDs,0);
+        newIDs = (Map<String, String>) getSharedPreferences(getString(R.string.New_Ids),0).getAll();
     }
 
     //Fonction de la notification channel

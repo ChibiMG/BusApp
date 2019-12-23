@@ -108,12 +108,12 @@ public class SiteConsultation extends Service{
         notification = new NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle("Service en route").setPriority(Notification.PRIORITY_DEFAULT).build();
         startForeground(1, notification);
 
+        //TODO : ici ou pas ?
         sharedPreferencesIDs = PreferenceManager.getDefaultSharedPreferences(this);
         editorIDs = sharedPreferencesIDs.edit();
 
-        //TODO : ici ou pas ?
         sharedPreferencesRIDs = PreferenceManager.getDefaultSharedPreferences(this);
-        editor1RIDs = sharedPreferencesIDs.edit();
+        editor1RIDs = sharedPreferencesRIDs.edit();
 
         Message msg = mServiceHandler.obtainMessage();
         mServiceHandler.sendMessage(msg);

@@ -7,6 +7,8 @@ import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Build;
 
+import java.util.Map;
+
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
@@ -17,6 +19,9 @@ public class CreateData extends IntentService {
 
     //notification du service
     private Notification notification;
+
+    //Map recordIDs
+    private Map<String, String> recordIDs;
 
     public CreateData() {
         super("CreateData");
@@ -30,6 +35,9 @@ public class CreateData extends IntentService {
         createNotificationChannel();
         notification = new NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle("Service en route").setPriority(Notification.PRIORITY_DEFAULT).build();
         startForeground(1, notification);
+
+        //Recuperation des RecordIDs
+        recordIDs = getSharedPreferences(sharedPreferencesRecordIDs,0);
     }
 
     //Fonction de la notification channel

@@ -40,7 +40,6 @@ import androidx.core.app.NotificationManagerCompat;
  *
  * Il regarde si on nouveau fichier CSV est disponible.
  *
- * TODO : enregister la verion (pas dans le service)
  * TODO : test : lors de l'installation on télécharge automatiquement le 1 fichier JSON (mais pas zip qui est dedans) ?
  * TODO : le service se lance au démarrage du téléphone
  * TODO : appelle réseau en periodique : workmanager => service qui regarde de temps en temps si nouvelle version (dans ce cas si tel echou ou aura toujours pas la bonne version donc une nouvelle notif plus tard)

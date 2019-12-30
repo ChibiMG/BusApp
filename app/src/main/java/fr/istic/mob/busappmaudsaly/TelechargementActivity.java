@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
+import android.widget.TextView;
 
 /**
  * @author Maud Garcon & Saly Knab
@@ -22,17 +25,45 @@ import android.os.Bundle;
 
 public class TelechargementActivity extends AppCompatActivity {
 
+    private TextView progression;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_telechargement);
 
+        progression = findViewById(R.id.progress);
+
         Intent intent = new Intent(TelechargementActivity.this, CreateData.class);
+        intent.putExtra("receiver", new DownloadReceiver(new Handler()));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(intent);
         }
         else {
             startService(intent);
+        }
+    }
+
+    private class DownloadReceiver extends ResultReceiver {
+
+        public DownloadReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+
+            super.onReceiveResult(resultCode, resultData);
+
+            if (resultCode == CreateData.UPDATE_PROGRESS) {
+
+                int progress = resultData.getInt("progress"); //get the progress
+                progression.setText(String.valueOf(progress));
+
+                if (progress == 100) {
+                    progression.setText("fini");
+                }
+            }
         }
     }
 }

@@ -6,4 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".TelechargementActivity">
 
+    <TextView
+        android:id="@+id/progress"
+        android:layout_width="166dp"
+        android:layout_height="37dp"
+        android:text="0"
+        tools:layout_editor_absoluteX="122dp"
+        tools:layout_editor_absoluteY="313dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

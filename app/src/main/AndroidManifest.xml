@@ -15,13 +15,13 @@
         android:usesCleartextTraffic="true">
 
         <service
-            android:name=".CreateData"
+            android:name=".services.CreateData"
             android:exported="false"></service>
 
         <activity android:name=".TelechargementActivity" />
 
         <service
-            android:name=".SiteConsultation"
+            android:name=".services.SiteConsultation"
             android:enabled="true"
             android:exported="true" />
 

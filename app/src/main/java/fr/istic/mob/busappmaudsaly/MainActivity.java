@@ -1,10 +1,8 @@
 package fr.istic.mob.busappmaudsaly;
 
-import android.app.Notification;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -13,8 +11,13 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.room.Room;
+import fr.istic.mob.busappmaudsaly.database.AppDatabase;
+import fr.istic.mob.busappmaudsaly.database.BusRoute;
+import fr.istic.mob.busappmaudsaly.services.SiteConsultation;
 
 public class MainActivity extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,6 +1,9 @@
 package fr.istic.mob.busappmaudsaly;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
+import fr.istic.mob.busappmaudsaly.database.AppDatabase;
+import fr.istic.mob.busappmaudsaly.services.CreateData;
 
 import android.content.Intent;
 import android.os.Build;
@@ -27,6 +30,8 @@ public class TelechargementActivity extends AppCompatActivity {
 
     private TextView progression;
 
+    private AppDatabase db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +47,8 @@ public class TelechargementActivity extends AppCompatActivity {
         else {
             startService(intent);
         }
+
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "database-name").allowMainThreadQueries().build();
     }
 
     private class DownloadReceiver extends ResultReceiver {
@@ -62,6 +69,10 @@ public class TelechargementActivity extends AppCompatActivity {
 
                 if (progress == 100) {
                     progression.setText("fini");
+
+                    if (db != null){
+                        System.out.println(db.busRouteDao().getAll());
+                    }
                 }
             }
         }

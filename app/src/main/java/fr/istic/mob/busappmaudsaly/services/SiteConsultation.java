@@ -1,4 +1,4 @@
-package fr.istic.mob.busappmaudsaly;
+package fr.istic.mob.busappmaudsaly.services;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -31,6 +31,8 @@ import java.util.Map;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import fr.istic.mob.busappmaudsaly.R;
+import fr.istic.mob.busappmaudsaly.TelechargementActivity;
 
 /**
  * @author Maud Garcon & Saly Knab

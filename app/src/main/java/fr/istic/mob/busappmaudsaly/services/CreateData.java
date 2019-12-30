@@ -1,4 +1,4 @@
-package fr.istic.mob.busappmaudsaly;
+package fr.istic.mob.busappmaudsaly.services;
 
 import android.app.IntentService;
 import android.app.Notification;
@@ -11,10 +11,13 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
+import com.opencsv.CSVReader;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,6 +28,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import androidx.core.app.NotificationCompat;
+import androidx.room.Room;
+import fr.istic.mob.busappmaudsaly.R;
+import fr.istic.mob.busappmaudsaly.database.AppDatabase;
+import fr.istic.mob.busappmaudsaly.database.BusRoute;
 
 public class CreateData extends IntentService {
 
@@ -33,6 +40,8 @@ public class CreateData extends IntentService {
 
     //notification du service
     private Notification notification;
+
+    private AppDatabase db;
 
     //CurentIDs
     SharedPreferences sharedPreferencesCurrentIDs;
@@ -62,6 +71,8 @@ public class CreateData extends IntentService {
 
         //Recuperation des RecordIDs
         newIDs = (Map<String, String>) getSharedPreferences(getString(R.string.New_Ids),0).getAll();
+
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "database-name").build();
     }
 
     //Fonction de la notification channel
@@ -87,13 +98,10 @@ public class CreateData extends IntentService {
 
                 // c'est utilisé pour voir la bar de progression
                 int fileLength = connection.getContentLength();
-                Log.d("Download", String.valueOf(fileLength));
-                Log.d("Download", connection.getContentType());
                 //telecharger le fichier
                 InputStream input = new BufferedInputStream(connection.getInputStream());
 
                 String path = getCacheDir().getPath() + "/" + element.getKey() + ".zip";
-                Log.d("Download", path);
                 OutputStream output = new FileOutputStream(path);
 
                 byte data[] = new byte[1024];
@@ -117,10 +125,6 @@ public class CreateData extends IntentService {
                 unpackZip(getCacheDir().getPath()+"/",element.getKey()+".zip");
             }
             File[] files = getCacheDir().listFiles();
-            Log.d("Files", String.valueOf(files.length));
-            for (int i = 0; i < files.length; i++){
-                Log.d("Files", "FileName" + files[i].getName());
-            }
 
 
 
@@ -170,10 +174,26 @@ public class CreateData extends IntentService {
             }
 
             zis.close();
+
+            addBusRoute();
         }
         catch(IOException e)
         {
             e.printStackTrace();
+        }
+    }
+
+    public void addBusRoute(){
+        try {
+            CSVReader reader = new CSVReader(new FileReader(getCacheDir()+"/routes.txt"));
+            String[] nextLine;
+            nextLine = reader.readNext();
+            while ((nextLine = reader.readNext()) != null) {
+                db.busRouteDao().insert(new BusRoute(Integer.parseInt(nextLine[0]), nextLine[2], nextLine[3], nextLine[7], nextLine[8], nextLine[9]));
+                System.out.println("add in database");
+            }
+        } catch (IOException e) {
+            System.out.println(e);
         }
     }
 

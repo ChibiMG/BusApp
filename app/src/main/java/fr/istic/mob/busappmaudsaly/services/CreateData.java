@@ -33,6 +33,7 @@ import androidx.room.Room;
 import fr.istic.mob.busappmaudsaly.R;
 import fr.istic.mob.busappmaudsaly.database.AppDatabase;
 import fr.istic.mob.busappmaudsaly.database.BusRoute;
+import fr.istic.mob.busappmaudsaly.database.Calendar;
 import fr.istic.mob.busappmaudsaly.database.Trip;
 
 public class CreateData extends IntentService {
@@ -186,7 +187,14 @@ public class CreateData extends IntentService {
             addFileInBdd("trips.txt", "(2/5)", new Function<String[], Void>() {
                 @Override
                 public Void apply(String[] line) {
-                    db.tripDao().insert(new Trip(Integer.parseInt(line[2]), Integer.parseInt(line[0]), line[3], Integer.parseInt(line[5])));
+                    db.tripDao().insert(new Trip(Integer.parseInt(line[2]), Integer.parseInt(line[0]), Integer.parseInt(line[1]), line[3], Integer.parseInt(line[5])));
+                    return null;
+                }
+            });
+            addFileInBdd("calendar.txt", "(3/5)", new Function<String[], Void>() {
+                @Override
+                public Void apply(String[] line) {
+                    db.calendarDao().insert(new Calendar(Integer.parseInt(line[0]), Integer.parseInt(line[1]), Integer.parseInt(line[2]), Integer.parseInt(line[3]), Integer.parseInt(line[4]), Integer.parseInt(line[5]), Integer.parseInt(line[6]), Integer.parseInt(line[7]), Integer.parseInt(line[8]), Integer.parseInt(line[9])));
                     return null;
                 }
             });

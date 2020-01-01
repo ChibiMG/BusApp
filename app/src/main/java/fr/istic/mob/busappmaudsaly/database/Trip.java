@@ -5,14 +5,18 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
-@Entity
+@Entity (foreignKeys = @ForeignKey(entity = BusRoute.class,parentColumns = "route_id", childColumns = "route_id"))
 public class Trip {
 
     @PrimaryKey
+    @ColumnInfo(name = "trip_id")
     public int tripId;
 
-    @ForeignKey(entity = BusRoute.class,parentColumns = "route_id", childColumns = "route_id")
+    @ColumnInfo(name = "route_id")
     public int routeId;
+
+    @ColumnInfo(name = "service_id")
+    public int serviceId;
 
     @ColumnInfo(name = "trip_headsign")
     public String tripHeadsign;
@@ -20,9 +24,10 @@ public class Trip {
     @ColumnInfo(name = "direction_id")
     public int directionId;
 
-    public Trip(int tripId, int routeId, String tripHeadsign, int directionId) {
+    public Trip(int tripId, int routeId, int serviceId, String tripHeadsign, int directionId) {
         this.tripId = tripId;
         this.routeId = routeId;
+        this.serviceId = serviceId;
         this.tripHeadsign = tripHeadsign;
         this.directionId = directionId;
     }

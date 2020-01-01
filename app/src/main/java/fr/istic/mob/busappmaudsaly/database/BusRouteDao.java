@@ -12,9 +12,9 @@ public interface BusRouteDao {
     @Query("SELECT * FROM busRoute")
     List<BusRoute> getAll();
 
-    @Insert (onConflict = OnConflictStrategy.IGNORE)
+    @Insert (onConflict = OnConflictStrategy.REPLACE)
     void insertAll(BusRoute... busRoutes);
 
-    @Insert (onConflict = OnConflictStrategy.IGNORE)
+    @Insert (onConflict = OnConflictStrategy.REPLACE)
     void insert(BusRoute busRoute);
 }

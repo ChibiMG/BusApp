@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey;
 public class BusRoute {
 
     @PrimaryKey
+    @ColumnInfo(name = "route_id")
     public int routeId;
 
     @ColumnInfo(name = "route_short_name")

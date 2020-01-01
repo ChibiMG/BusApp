@@ -6,12 +6,25 @@
     android:layout_height="match_parent"
     tools:context=".TelechargementActivity">
 
-    <TextView
-        android:id="@+id/progress"
-        android:layout_width="166dp"
-        android:layout_height="37dp"
-        android:text="0"
-        tools:layout_editor_absoluteX="122dp"
-        tools:layout_editor_absoluteY="313dp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/activity_horizontal_margin">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/progress"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:text="0"
+            android:textAlignment="center" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

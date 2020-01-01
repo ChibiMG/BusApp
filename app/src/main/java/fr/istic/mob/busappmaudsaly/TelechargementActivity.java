@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 /**
@@ -28,16 +29,16 @@ import android.widget.TextView;
 
 public class TelechargementActivity extends AppCompatActivity {
 
-    private TextView progression;
-
-    private AppDatabase db;
+    private TextView progressionText;
+    private ProgressBar progressionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_telechargement);
 
-        progression = findViewById(R.id.progress);
+        progressionText = findViewById(R.id.progress);
+        progressionBar = findViewById(R.id.progressBar);
 
         Intent intent = new Intent(TelechargementActivity.this, CreateData.class);
         intent.putExtra("receiver", new DownloadReceiver(new Handler()));
@@ -47,8 +48,6 @@ public class TelechargementActivity extends AppCompatActivity {
         else {
             startService(intent);
         }
-
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "database-name").allowMainThreadQueries().build();
     }
 
     private class DownloadReceiver extends ResultReceiver {
@@ -65,15 +64,9 @@ public class TelechargementActivity extends AppCompatActivity {
             if (resultCode == CreateData.UPDATE_PROGRESS) {
 
                 int progress = resultData.getInt("progress"); //get the progress
-                progression.setText(String.valueOf(progress));
-
-                if (progress == 100) {
-                    progression.setText("fini");
-
-                    if (db != null){
-                        System.out.println(db.busRouteDao().getAll());
-                    }
-                }
+                progressionBar.setProgress(progress);
+                String progressText = resultData.getString("progressText"); //get the progress
+                progressionText.setText(progressText);
             }
         }
     }

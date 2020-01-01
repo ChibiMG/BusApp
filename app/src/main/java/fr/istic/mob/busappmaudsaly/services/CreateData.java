@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ResultReceiver;
-import android.util.Log;
 
 import com.opencsv.CSVReader;
 
@@ -23,15 +22,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import androidx.arch.core.util.Function;
 import androidx.core.app.NotificationCompat;
 import androidx.room.Room;
 import fr.istic.mob.busappmaudsaly.R;
 import fr.istic.mob.busappmaudsaly.database.AppDatabase;
 import fr.istic.mob.busappmaudsaly.database.BusRoute;
+import fr.istic.mob.busappmaudsaly.database.Trip;
 
 public class CreateData extends IntentService {
 
@@ -51,6 +53,8 @@ public class CreateData extends IntentService {
     private Map<String, String> newIDs;
 
     public static final int UPDATE_PROGRESS = 8344;
+
+    private ResultReceiver receiver;
 
     public CreateData() {
         super("CreateData");
@@ -87,7 +91,7 @@ public class CreateData extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        ResultReceiver receiver = (ResultReceiver) intent.getParcelableExtra("receiver");
+        receiver = (ResultReceiver) intent.getParcelableExtra("receiver");
         try {
 
             for (Map.Entry<String, String> element : newIDs.entrySet()) {
@@ -111,9 +115,8 @@ public class CreateData extends IntentService {
                     total += count;
 
                     // publishing the progress....
-                    Bundle resultData = new Bundle();
-                    resultData.putInt("progress" ,(int) (total * 100 / fileLength));
-                    receiver.send(UPDATE_PROGRESS, resultData);
+                    sendToReceiver((int) (total * 100 / fileLength), "Téléchargement des données");
+
                     output.write(data, 0, count);
                 }
 
@@ -132,10 +135,8 @@ public class CreateData extends IntentService {
             e.printStackTrace();
         }
 
-        Bundle resultData = new Bundle();
-        resultData.putInt("progress" ,100);
+        sendToReceiver(100, "Téléchargement fini");
 
-        receiver.send(UPDATE_PROGRESS, resultData);
     }
 
     private void unpackZip(String path, String zipname){
@@ -175,7 +176,21 @@ public class CreateData extends IntentService {
 
             zis.close();
 
-            addBusRoute();
+            addFileInBdd("routes.txt", "(1/5)", new Function<String[], Void>() {
+                @Override
+                public Void apply(String[] line) {
+                    db.busRouteDao().insert(new BusRoute(Integer.parseInt(line[0]), line[2], line[3], line[7], line[8], line[9]));
+                    return null;
+                }
+            });
+            addFileInBdd("trips.txt", "(2/5)", new Function<String[], Void>() {
+                @Override
+                public Void apply(String[] line) {
+                    db.tripDao().insert(new Trip(Integer.parseInt(line[2]), Integer.parseInt(line[0]), line[3], Integer.parseInt(line[5])));
+                    return null;
+                }
+            });
+
         }
         catch(IOException e)
         {
@@ -183,18 +198,28 @@ public class CreateData extends IntentService {
         }
     }
 
-    public void addBusRoute(){
+    public void addFileInBdd(String file, String avancement, Function<String[], Void> f) {
         try {
-            CSVReader reader = new CSVReader(new FileReader(getCacheDir()+"/routes.txt"));
-            String[] nextLine;
-            nextLine = reader.readNext();
-            while ((nextLine = reader.readNext()) != null) {
-                db.busRouteDao().insert(new BusRoute(Integer.parseInt(nextLine[0]), nextLine[2], nextLine[3], nextLine[7], nextLine[8], nextLine[9]));
-                System.out.println("add in database");
+            CSVReader reader = new CSVReader(new FileReader(getCacheDir()+"/" + file));
+            reader.skip(1);
+            List<String[]> lines = reader.readAll();
+            int i = 0;
+            for (String[] line : lines) {
+                f.apply(line);
+                sendToReceiver((int) 100 * i/lines.size(), "Ajout des données " + avancement);
+                i++;
             }
+            reader.close();
         } catch (IOException e) {
             System.out.println(e);
         }
+    }
+
+    public void sendToReceiver(int progress, String status) {
+        Bundle resultData = new Bundle();
+        resultData.putInt("progress", progress);
+        resultData.putString("progressText", status);
+        receiver.send(UPDATE_PROGRESS, resultData);
     }
 
     @Override

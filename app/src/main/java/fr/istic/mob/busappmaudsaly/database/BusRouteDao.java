@@ -9,12 +9,15 @@ import androidx.room.Query;
 
 @Dao
 public interface BusRouteDao {
-    @Query("SELECT * FROM busRoute")
+    @Query("SELECT * FROM bus_route")
     List<BusRoute> getAll();
 
     @Insert (onConflict = OnConflictStrategy.REPLACE)
-    void insertAll(BusRoute... busRoutes);
+    void insertAll(List<BusRoute> busRoutes);
 
     @Insert (onConflict = OnConflictStrategy.REPLACE)
     void insert(BusRoute busRoute);
+
+    @Query("SELECT COUNT(*) FROM bus_route")
+    int count();
 }

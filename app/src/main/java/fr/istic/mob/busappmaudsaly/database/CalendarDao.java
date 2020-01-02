@@ -14,11 +14,11 @@ public interface CalendarDao {
     List<Calendar> getAll();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAll(Calendar... calendars);
+    void insertAll(List<Calendar> calendars);
 
     @Insert (onConflict = OnConflictStrategy.REPLACE)
     void insert(Calendar calendar);
 
-    @Query("SELECT COUNT(*) FROM calendar")
+    @Query("SELECT COUNT(*) FROM Calendar")
     int count();
 }

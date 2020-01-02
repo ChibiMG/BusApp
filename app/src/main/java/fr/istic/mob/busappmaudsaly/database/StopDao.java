@@ -6,20 +6,19 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
-import androidx.room.Transaction;
 
 @Dao
-public interface TripDao {
-    @Query("SELECT * FROM trip")
-    List<Trip> getAll();
+public interface StopDao {
+
+    @Query("SELECT * FROM Stop")
+    List<Stop> getAll();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    @Transaction
-    void insertAll(List<Trip> trips);
+    void insertAll(List<Stop> stops);
 
     @Insert (onConflict = OnConflictStrategy.REPLACE)
-    void insert(Trip trip);
+    void insert(Stop stop);
 
-    @Query("SELECT COUNT(*) FROM trip")
+    @Query("SELECT COUNT(*) FROM Stop")
     int count();
 }

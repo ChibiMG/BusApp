@@ -6,6 +6,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteStatement;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ResultReceiver;
@@ -20,8 +21,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -29,11 +32,15 @@ import java.util.zip.ZipInputStream;
 
 import androidx.arch.core.util.Function;
 import androidx.core.app.NotificationCompat;
+import androidx.room.Entity;
 import androidx.room.Room;
+import androidx.sqlite.db.SupportSQLiteStatement;
 import fr.istic.mob.busappmaudsaly.R;
 import fr.istic.mob.busappmaudsaly.database.AppDatabase;
 import fr.istic.mob.busappmaudsaly.database.BusRoute;
 import fr.istic.mob.busappmaudsaly.database.Calendar;
+import fr.istic.mob.busappmaudsaly.database.Stop;
+import fr.istic.mob.busappmaudsaly.database.StopTime;
 import fr.istic.mob.busappmaudsaly.database.Trip;
 
 public class CreateData extends IntentService {
@@ -77,7 +84,7 @@ public class CreateData extends IntentService {
         //Recuperation des RecordIDs
         newIDs = (Map<String, String>) getSharedPreferences(getString(R.string.New_Ids),0).getAll();
 
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "database-name").build();
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "database-name").enableMultiInstanceInvalidation().build();
     }
 
     //Fonction de la notification channel
@@ -93,6 +100,9 @@ public class CreateData extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         receiver = (ResultReceiver) intent.getParcelableExtra("receiver");
+
+        db.clearAllTables();
+
         try {
 
             for (Map.Entry<String, String> element : newIDs.entrySet()) {
@@ -128,9 +138,6 @@ public class CreateData extends IntentService {
 
                 unpackZip(getCacheDir().getPath()+"/",element.getKey()+".zip");
             }
-            File[] files = getCacheDir().listFiles();
-
-
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -138,6 +145,7 @@ public class CreateData extends IntentService {
 
         sendToReceiver(100, "Téléchargement fini");
 
+        
     }
 
     private void unpackZip(String path, String zipname){
@@ -177,28 +185,149 @@ public class CreateData extends IntentService {
 
             zis.close();
 
-            addFileInBdd("routes.txt", "(1/5)", new Function<String[], Void>() {
+            db.runInTransaction(new Runnable() {
                 @Override
-                public Void apply(String[] line) {
-                    db.busRouteDao().insert(new BusRoute(Integer.parseInt(line[0]), line[2], line[3], line[7], line[8], line[9]));
-                    return null;
-                }
-            });
-            addFileInBdd("trips.txt", "(2/5)", new Function<String[], Void>() {
-                @Override
-                public Void apply(String[] line) {
-                    db.tripDao().insert(new Trip(Integer.parseInt(line[2]), Integer.parseInt(line[0]), Integer.parseInt(line[1]), line[3], Integer.parseInt(line[5])));
-                    return null;
-                }
-            });
-            addFileInBdd("calendar.txt", "(3/5)", new Function<String[], Void>() {
-                @Override
-                public Void apply(String[] line) {
-                    db.calendarDao().insert(new Calendar(Integer.parseInt(line[0]), Integer.parseInt(line[1]), Integer.parseInt(line[2]), Integer.parseInt(line[3]), Integer.parseInt(line[4]), Integer.parseInt(line[5]), Integer.parseInt(line[6]), Integer.parseInt(line[7]), Integer.parseInt(line[8]), Integer.parseInt(line[9])));
-                    return null;
-                }
-            });
+                public void run() {
+                    String sql = "INSERT or IGNORE INTO bus_route (route_id, route_short_name, route_long_name, route_color, route_text_color, route_sort_order) VALUES (?, ?, ?, ?, ?, ?)";
+                    final SupportSQLiteStatement statement = db.compileStatement(sql);
 
+                    parseCsvFile("routes.txt", "(1/5)", new Function<String[], Void>() {
+                        @Override
+                        public Void apply(String[] line) {
+                            statement.clearBindings();
+                            statement.bindLong(1, Long.parseLong(line[0]));
+                            statement.bindString(2, line[2]);
+                            statement.bindString(3, line[3]);
+                            statement.bindString(4, line[7]);
+                            statement.bindString(5, line[8]);
+                            statement.bindString(6, line[9]);
+                            statement.executeInsert();
+
+                            return null;
+                        }
+                    });
+
+                    try {
+                        statement.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            db.runInTransaction(new Runnable() {
+                @Override
+                public void run() {
+                    String sql = "INSERT or IGNORE INTO calendar (service_id, monday, tuesday, wednesday, thursday, friday, saturday, sunday, start_date, end_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    final SupportSQLiteStatement statement = db.compileStatement(sql);
+
+                    parseCsvFile("calendar.txt", "(2/5)", new Function<String[], Void>() {
+                        @Override
+                        public Void apply(String[] line) {
+                            statement.clearBindings();
+                            statement.bindLong(1, Long.parseLong(line[0]));
+                            statement.bindLong(2, Long.parseLong(line[1]));
+                            statement.bindLong(3, Long.parseLong(line[2]));
+                            statement.bindLong(4, Long.parseLong(line[3]));
+                            statement.bindLong(5, Long.parseLong(line[4]));
+                            statement.bindLong(6, Long.parseLong(line[5]));
+                            statement.bindLong(7, Long.parseLong(line[6]));
+                            statement.bindLong(8, Long.parseLong(line[7]));
+                            statement.bindLong(9, Long.parseLong(line[8]));
+                            statement.bindLong(10, Long.parseLong(line[9]));
+                            statement.executeInsert();
+
+                            return null;
+                        }
+                    });
+
+                    try {
+                        statement.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            db.runInTransaction(new Runnable() {
+                @Override
+                public void run() {
+                    String sql = "INSERT or IGNORE INTO trip (trip_id, route_id, service_id, trip_headsign, direction_id) VALUES (?, ?, ?, ?, ?)";
+                    final SupportSQLiteStatement statement = db.compileStatement(sql);
+
+                    parseCsvFile("trips.txt", "(3/5)", new Function<String[], Void>() {
+                        @Override
+                        public Void apply(String[] line) {
+                            statement.clearBindings();
+                            statement.bindLong(1, Long.parseLong(line[2]));
+                            statement.bindLong(2, Long.parseLong(line[0]));
+                            statement.bindLong(3, Long.parseLong(line[1]));
+                            statement.bindString(4, line[3]);
+                            statement.bindLong(5, Long.parseLong(line[5]));
+                            statement.executeInsert();
+
+                            return null;
+                        }
+                    });
+
+                    try {
+                        statement.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            db.runInTransaction(new Runnable() {
+                @Override
+                public void run() {
+                    String sql = "INSERT or IGNORE INTO stop (stop_id, stop_name, stop_desc) VALUES (?, ?, ?)";
+                    final SupportSQLiteStatement statement = db.compileStatement(sql);
+
+                    parseCsvFile("stops.txt", "(4/5)", new Function<String[], Void>() {
+                        @Override
+                        public Void apply(String[] line) {
+                            statement.clearBindings();
+                            statement.bindLong(1, Long.parseLong(line[0]));
+                            statement.bindString(2, line[2]);
+                            statement.bindString(3, line[3]);
+                            statement.executeInsert();
+
+                            return null;
+                        }
+                    });
+
+                    try {
+                        statement.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            db.runInTransaction(new Runnable() {
+                @Override
+                public void run() {
+                    String sql = "INSERT or IGNORE INTO stop_time (trip_id, arrival_time, departure_time, stop_id) VALUES (?, ?, ?, ?)";
+                    final SupportSQLiteStatement statement = db.compileStatement(sql);
+
+                    parseCsvFile("stop_times.txt", "(5/5)", new Function<String[], Void>() {
+                        @Override
+                        public Void apply(String[] line) {
+                            statement.clearBindings();
+                            statement.bindLong(1, Long.parseLong(line[0]));
+                            statement.bindString(2, line[1]);
+                            statement.bindString(3, line[2]);
+                            statement.bindLong(4, Long.parseLong(line[3]));
+                            statement.executeInsert();
+
+                            return null;
+                        }
+                    });
+
+                    try {
+                        statement.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
         catch(IOException e)
         {
@@ -206,8 +335,10 @@ public class CreateData extends IntentService {
         }
     }
 
-    public void addFileInBdd(String file, String avancement, Function<String[], Void> f) {
+    public void parseCsvFile(String file, String avancement, Function<String[], Void> f) {
         try {
+            sendToReceiver(0, "Ouverture du fichier " + avancement);
+
             CSVReader reader = new CSVReader(new FileReader(getCacheDir()+"/" + file));
             reader.skip(1);
             List<String[]> lines = reader.readAll();

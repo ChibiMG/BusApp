@@ -5,7 +5,18 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
-@Entity (foreignKeys = @ForeignKey(entity = BusRoute.class,parentColumns = "route_id", childColumns = "route_id"))
+@Entity (tableName = "trip", foreignKeys = {
+        @ForeignKey(
+                entity = BusRoute.class,
+                parentColumns = "route_id",
+                childColumns = "route_id"
+        ),
+        @ForeignKey(
+                entity = Calendar.class,
+                parentColumns = "service_id",
+                childColumns = "service_id"
+        )
+})
 public class Trip {
 
     @PrimaryKey

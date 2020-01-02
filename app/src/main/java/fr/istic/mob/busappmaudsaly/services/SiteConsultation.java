@@ -42,7 +42,6 @@ import fr.istic.mob.busappmaudsaly.TelechargementActivity;
  *
  * Il regarde si on nouveau fichier CSV est disponible.
  *
- * TODO : test : lors de l'installation on télécharge automatiquement le 1 fichier JSON (mais pas zip qui est dedans) ?
  * TODO : le service se lance au démarrage du téléphone
  * TODO : appelle réseau en periodique : workmanager => service qui regarde de temps en temps si nouvelle version (dans ce cas si tel echou ou aura toujours pas la bonne version donc une nouvelle notif plus tard)
  */
@@ -69,12 +68,12 @@ public class SiteConsultation extends Service{
     private Map<String, String> currentIDs;
 
     //Id a verifier
-    private Map<String, String> recordids;
-    SharedPreferences sharedPreferencesRIDs;
+    private Map<String, String> newIDs;
+    SharedPreferences sharedPreferencesNewIDs;
     SharedPreferences.Editor editorNewIDs;
 
     public SiteConsultation() {
-        recordids = new HashMap<>();
+        newIDs = new HashMap<>();
 
         //URL a verifier
         try {
@@ -104,12 +103,9 @@ public class SiteConsultation extends Service{
         notification = new NotificationCompat.Builder(this, CHANNEL_ID).setContentTitle("Service en route").setPriority(Notification.PRIORITY_DEFAULT).build();
         startForeground(1, notification);
 
-        //Récuperer ids actuels
-        currentIDs = (Map<String, String>) getSharedPreferences(getString(R.string.Current_Ids),0).getAll();
-
         //Pour New IDs
-        sharedPreferencesRIDs = getSharedPreferences(getString(R.string.New_Ids), 0);
-        editorNewIDs = sharedPreferencesRIDs.edit();
+        sharedPreferencesNewIDs = getSharedPreferences(getString(R.string.New_Ids), 0);
+        editorNewIDs = sharedPreferencesNewIDs.edit();
 
         Message msg = mServiceHandler.obtainMessage();
         mServiceHandler.sendMessage(msg);
@@ -145,7 +141,7 @@ public class SiteConsultation extends Service{
                 String contenu = br.readLine();
                 JSONObject json = new JSONObject(contenu);
                 JSONArray array = new JSONArray(json.getString("records"));
-                recordids.clear();
+                newIDs.clear();
 
                 //Ajouter les recordIDs
                 for (int i = 0; i < array.length(); i++){
@@ -157,7 +153,7 @@ public class SiteConsultation extends Service{
 
                     editorNewIDs.putString(recordid,url);
                     editorNewIDs.commit();
-                    recordids.put(tab.getString("recordid"), fields.getString("url"));
+                    newIDs.put(tab.getString("recordid"), fields.getString("url"));
                 }
 
             }catch (IOException e){
@@ -176,8 +172,11 @@ public class SiteConsultation extends Service{
 
     //Fonction de la notification de MAJ
     public void notificationMAJ(){
+        //Récuperer ids actuels
+        currentIDs = (Map<String, String>) getSharedPreferences(getString(R.string.Current_Ids),0).getAll();
+
         //Si recordIDs != de IDs)
-        if (!currentIDs.containsKey(sharedPreferencesRIDs.getAll().keySet())){
+        if (!currentIDs.containsKey(sharedPreferencesNewIDs.getAll().keySet())){
             NotificationChannel serviceChannel = null;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 serviceChannel = new NotificationChannel(CHANNEL_ID1, "ABC", NotificationManager.IMPORTANCE_DEFAULT);

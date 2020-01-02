@@ -6,7 +6,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteStatement;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ResultReceiver;
@@ -21,10 +20,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -32,16 +29,10 @@ import java.util.zip.ZipInputStream;
 
 import androidx.arch.core.util.Function;
 import androidx.core.app.NotificationCompat;
-import androidx.room.Entity;
 import androidx.room.Room;
 import androidx.sqlite.db.SupportSQLiteStatement;
 import fr.istic.mob.busappmaudsaly.R;
 import fr.istic.mob.busappmaudsaly.database.AppDatabase;
-import fr.istic.mob.busappmaudsaly.database.BusRoute;
-import fr.istic.mob.busappmaudsaly.database.Calendar;
-import fr.istic.mob.busappmaudsaly.database.Stop;
-import fr.istic.mob.busappmaudsaly.database.StopTime;
-import fr.istic.mob.busappmaudsaly.database.Trip;
 
 public class CreateData extends IntentService {
 
@@ -55,7 +46,7 @@ public class CreateData extends IntentService {
 
     //CurentIDs
     SharedPreferences sharedPreferencesCurrentIDs;
-    SharedPreferences.Editor editorIDs;
+    SharedPreferences.Editor editorCurrentIDs;
 
     //Map NewIDs
     private Map<String, String> newIDs;
@@ -79,7 +70,7 @@ public class CreateData extends IntentService {
 
         //Creation des IDs actuels
         sharedPreferencesCurrentIDs = getSharedPreferences(getString(R.string.Current_Ids), 0);
-        editorIDs = sharedPreferencesCurrentIDs.edit();
+        editorCurrentIDs = sharedPreferencesCurrentIDs.edit();
 
         //Recuperation des RecordIDs
         newIDs = (Map<String, String>) getSharedPreferences(getString(R.string.New_Ids),0).getAll();
@@ -145,7 +136,12 @@ public class CreateData extends IntentService {
 
         sendToReceiver(100, "Téléchargement fini");
 
-        
+        editorCurrentIDs.clear();
+        for (Map.Entry<String, String> entry : newIDs.entrySet()){
+            editorCurrentIDs.putString(entry.getKey(), entry.getValue());
+        }
+        newIDs.clear();
+
     }
 
     private void unpackZip(String path, String zipname){

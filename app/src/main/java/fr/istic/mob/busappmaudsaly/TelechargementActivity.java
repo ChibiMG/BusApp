@@ -19,7 +19,6 @@ import android.widget.TextView;
  * Service qui consulte le site : https://data.explore.star.fr/explore/dataset/tco-busmetro-horaires-gtfs-versions-td/export/
  * Qui regarde si on nouveau fichier CSV est disponible
  *
- * TODO :ne doit pas bloquer à la rotation de l'appareil => c'est le service lié à l'acitvity qui va faire le téléchargement
  */
 
 public class TelechargementActivity extends AppCompatActivity {

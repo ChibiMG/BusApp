@@ -32,4 +32,5 @@ dependencies {
     implementation 'androidx.room:room-runtime:2.2.3'
     annotationProcessor 'androidx.room:room-compiler:2.2.3'
     implementation 'com.opencsv:opencsv:4.6'
+    implementation 'androidx.work:work-runtime:2.2.0'
 }

@@ -6,15 +6,21 @@ import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.room.Room;
+import androidx.work.PeriodicWorkRequest;
 import fr.istic.mob.busappmaudsaly.database.AppDatabase;
 import fr.istic.mob.busappmaudsaly.database.BusRoute;
 import fr.istic.mob.busappmaudsaly.services.SiteConsultation;
+import fr.istic.mob.busappmaudsaly.task.SiteConsultationTask;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,12 +39,6 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
-        Intent intent = new Intent(MainActivity.this, SiteConsultation.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent);
-        }
-        else {
-            startService(intent);
-        }
+        PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(SiteConsultationTask.class, 10, TimeUnit.MINUTES).build();
     }
 }

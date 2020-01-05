@@ -49,7 +49,7 @@ public class CreateData extends IntentService {
     SharedPreferences.Editor editorCurrentIDs;
 
     //Map NewIDs
-    private Map<String, String> newIDs;
+    private SharedPreferences newIDs;
 
     public static final int UPDATE_PROGRESS = 8344;
 
@@ -73,7 +73,7 @@ public class CreateData extends IntentService {
         editorCurrentIDs = sharedPreferencesCurrentIDs.edit();
 
         //Recuperation des RecordIDs
-        newIDs = (Map<String, String>) getSharedPreferences(getString(R.string.New_Ids),0).getAll();
+        newIDs = getSharedPreferences(getString(R.string.New_Ids),0);
 
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "database-name").enableMultiInstanceInvalidation().build();
     }
@@ -95,8 +95,7 @@ public class CreateData extends IntentService {
         db.clearAllTables();
 
         try {
-
-            for (Map.Entry<String, String> element : newIDs.entrySet()) {
+            for (Map.Entry<String, String> element : ((Map<String, String>) newIDs.getAll()).entrySet()) {
                 //creer utl et connection
                 URL url = new URL(element.getValue());
                 URLConnection connection = url.openConnection();
@@ -137,10 +136,11 @@ public class CreateData extends IntentService {
         sendToReceiver(100, "Téléchargement fini");
 
         editorCurrentIDs.clear();
-        for (Map.Entry<String, String> entry : newIDs.entrySet()){
+        for (Map.Entry<String, String> entry : ((Map<String, String>) newIDs.getAll()).entrySet()){
             editorCurrentIDs.putString(entry.getKey(), entry.getValue());
+            editorCurrentIDs.commit();
         }
-        newIDs.clear();
+        newIDs.edit().clear();
 
     }
 

@@ -22,11 +22,6 @@
             android:name=".TelechargementActivity"
             android:configChanges="orientation|screenSize"/>
 
-        <service
-            android:name=".services.SiteConsultation"
-            android:enabled="true"
-            android:exported="true" />
-
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"

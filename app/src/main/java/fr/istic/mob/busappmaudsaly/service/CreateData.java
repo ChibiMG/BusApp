@@ -1,4 +1,4 @@
-package fr.istic.mob.busappmaudsaly.services;
+package fr.istic.mob.busappmaudsaly.service;
 
 import android.app.IntentService;
 import android.app.Notification;

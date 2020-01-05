@@ -1,9 +1,7 @@
 package fr.istic.mob.busappmaudsaly;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Room;
-import fr.istic.mob.busappmaudsaly.database.AppDatabase;
-import fr.istic.mob.busappmaudsaly.services.CreateData;
+import fr.istic.mob.busappmaudsaly.service.CreateData;
 
 import android.content.Intent;
 import android.os.Build;

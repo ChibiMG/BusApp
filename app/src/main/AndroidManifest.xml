@@ -15,7 +15,7 @@
         android:usesCleartextTraffic="true">
 
         <service
-            android:name=".services.CreateData"
+            android:name=".service.CreateData"
             android:exported="false"></service>
 
         <activity

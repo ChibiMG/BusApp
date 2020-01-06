@@ -13,19 +13,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".GuideResearch.GuideActivity"></activity>
 
         <service
             android:name=".service.CreateData"
-            android:exported="false"></service>
+            android:exported="false" />
 
         <activity
             android:name=".TelechargementActivity"
-            android:configChanges="orientation|screenSize"/>
-
+            android:configChanges="orientation|screenSize" />
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:configChanges="orientation|screenSize">
+            android:configChanges="orientation|screenSize"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

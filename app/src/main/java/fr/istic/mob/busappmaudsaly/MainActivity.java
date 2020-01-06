@@ -1,6 +1,10 @@
 package fr.istic.mob.busappmaudsaly;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -14,9 +18,18 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
+import fr.istic.mob.busappmaudsaly.GuideResearch.GuideActivity;
 import fr.istic.mob.busappmaudsaly.task.SiteConsultationTask;
 
 public class MainActivity extends AppCompatActivity {
+
+    private Button researchGuide;
+
+    private Button researchArret;
+
+    private EditText researchArretText;
+
+    private Intent intent;
 
     /**
      * TODO : consulter les horaires des bus
@@ -39,5 +52,23 @@ public class MainActivity extends AppCompatActivity {
         PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(SiteConsultationTask.class, 10, TimeUnit.MINUTES).build();
         WorkManager.getInstance(this).enqueue(periodicWorkRequest);
 
+        researchGuide = findViewById(R.id.searchGuideButton);
+        researchGuide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent = new Intent(MainActivity.this, GuideActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        researchArretText = findViewById(R.id.searchText);
+
+        researchArret = findViewById(R.id.searchButton);
+        researchGuide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //go ??? + researchArretText.getText()
+            }
+        });
     }
 }

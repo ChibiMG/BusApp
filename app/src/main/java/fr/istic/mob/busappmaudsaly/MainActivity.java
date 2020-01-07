@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
     /**
      * TODO : consulter les horaires des bus
      * TODO : fragement affichés contenant 1, 2 ou 3 en fonction de la conf de l'écran (1 ou 2 tel, 3 tablette)
-     * TODO : fragment 1 : selectionneur de date et heure, snipper ligne de bus, et qd ligne semectionné snipper direction
      * TODO : fragement 2 : apres date, heure direction slectionnées, arret affichés, de l'arrivée au départ
      * TODO : fragement 3 : apres clique sur arret, horraire de bus choisi, direction choisi, arret choisi, heure choisi (jusqua fin de journée)
      * TODO : fragement 4 : clique sur horaire : heures de passage du bus choisi entre l'arret choisi et le terminus
@@ -57,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
         researchGuide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "recherche guidee", Toast.LENGTH_LONG).show();
                 intent = new Intent(MainActivity.this, GuideActivity.class);
                 startActivity(intent);
             }
@@ -69,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         researchArret.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "recherche arret", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "recherche arret : vide actuellement", Toast.LENGTH_LONG).show();
                 //go ??? + researchArretText.getText()
             }
         });

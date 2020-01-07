@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -55,7 +56,8 @@ public class MainActivity extends AppCompatActivity {
         researchGuide = findViewById(R.id.searchGuideButton);
         researchGuide.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this, "recherche guidee", Toast.LENGTH_LONG).show();
                 intent = new Intent(MainActivity.this, GuideActivity.class);
                 startActivity(intent);
             }
@@ -64,9 +66,10 @@ public class MainActivity extends AppCompatActivity {
         researchArretText = findViewById(R.id.searchText);
 
         researchArret = findViewById(R.id.searchButton);
-        researchGuide.setOnClickListener(new View.OnClickListener() {
+        researchArret.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this, "recherche arret", Toast.LENGTH_LONG).show();
                 //go ??? + researchArretText.getText()
             }
         });

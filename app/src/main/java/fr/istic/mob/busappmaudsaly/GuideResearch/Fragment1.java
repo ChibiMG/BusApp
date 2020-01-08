@@ -27,7 +27,6 @@ import fr.istic.mob.busappmaudsaly.dialog.TimePickerFragment;
 /**
  * TODO : fragment 1 : selectionneur de date et heure, snipper ligne de bus, et qd ligne semectionné snipper direction
  * TODO : date
- * TODO : xorrier heure quand 00 => 09
  */
 
 public class Fragment1 extends Fragment implements TimePickerDialog.OnTimeSetListener {
@@ -59,7 +58,12 @@ public class Fragment1 extends Fragment implements TimePickerDialog.OnTimeSetLis
 
         time = view.findViewById(R.id.time);
 
-        time.setText(hour + "h" + minute);
+        if (this.minute < 10){
+            time.setText(hour + "h0" + minute);
+        }
+        else{
+            time.setText(hour + "h" + minute);
+        }
 
         time.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,6 +111,11 @@ public class Fragment1 extends Fragment implements TimePickerDialog.OnTimeSetLis
     public void onTimeSet(TimePicker timePicker, int hour, int minute) {
         this.hour = hour;
         this.minute = minute;
-        time.setText(hour + "h" + minute);
+        if (this.minute < 10){
+            time.setText(hour + "h0" + minute);
+        }
+        else{
+            time.setText(hour + "h" + minute);
+        }
     }
 }

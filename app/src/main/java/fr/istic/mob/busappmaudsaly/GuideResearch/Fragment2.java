@@ -14,6 +14,8 @@ import fr.istic.mob.busappmaudsaly.R;
 
 public class Fragment2 extends Fragment {
 
+    private int idRoute;
+
     public Fragment2() {
     }
 
@@ -29,6 +31,9 @@ public class Fragment2 extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        idRoute = getArguments().getInt("routeId");
+
         return inflater.inflate(R.layout.fragment_fragment2, container, false);
     }
 

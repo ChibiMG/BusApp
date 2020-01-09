@@ -1,6 +1,8 @@
 package fr.istic.mob.busappmaudsaly.Adapter;
 
 import android.graphics.Color;
+import android.net.sip.SipAudioCall;
+import android.net.sip.SipSession;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +15,14 @@ import fr.istic.mob.busappmaudsaly.R;
 import fr.istic.mob.busappmaudsaly.database.BusRoute;
 
 public class BusRouteAdapter extends RecyclerView.Adapter<BusRouteAdapter.MyViewHolder> {
+
     private List<BusRoute> mDataset;
+
+    private OnItemClickListener onItemClickListener;
+
+    public interface OnItemClickListener{
+        void onItemClick(BusRoute item);
+    }
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -31,8 +40,9 @@ public class BusRouteAdapter extends RecyclerView.Adapter<BusRouteAdapter.MyView
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public BusRouteAdapter(List<BusRoute> myDataset) {
+    public BusRouteAdapter(List<BusRoute> myDataset, OnItemClickListener onItemClickListener) {
         mDataset = myDataset;
+        this.onItemClickListener = onItemClickListener;
     }
 
     // Create new views (invoked by the layout manager)
@@ -49,11 +59,17 @@ public class BusRouteAdapter extends RecyclerView.Adapter<BusRouteAdapter.MyView
     public void onBindViewHolder(MyViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        BusRoute item = mDataset.get(position);
+        final BusRoute item = mDataset.get(position);
         holder.routeNameView.setText(item.routeLongName);
         holder.routeNumberView.setText(item.routeShortName);
         holder.routeNumberView.setBackgroundColor(Color.parseColor("#" + item.routeColor));
         holder.routeNumberView.setTextColor(Color.parseColor("#" + item.routeTextColor));
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onItemClickListener.onItemClick(item);
+            }
+        });
 
     }
 

@@ -8,9 +8,11 @@ import android.os.Bundle;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -24,14 +26,15 @@ import androidx.room.Room;
 import fr.istic.mob.busappmaudsaly.Adapter.BusRouteAdapter;
 import fr.istic.mob.busappmaudsaly.R;
 import fr.istic.mob.busappmaudsaly.database.AppDatabase;
+import fr.istic.mob.busappmaudsaly.database.BusRoute;
 import fr.istic.mob.busappmaudsaly.dialog.DatePickerFragment;
 import fr.istic.mob.busappmaudsaly.dialog.TimePickerFragment;
 
 /**
- * TODO : fragment 1 : selectionneur de date et heure, snipper ligne de bus, et qd ligne semectionné snipper direction
+ * TODO : bundle l'heure et date regarder en bdd comment elle est mise
  */
 
-public class Fragment1 extends Fragment implements TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
+public class Fragment1 extends Fragment implements TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener, BusRouteAdapter.OnItemClickListener {
 
     private TextView time;
     private TextView date;
@@ -42,6 +45,8 @@ public class Fragment1 extends Fragment implements TimePickerDialog.OnTimeSetLis
     private int year;
     private int month;
     private int day;
+
+    private int idRoute;
 
     public static Fragment1 newInstance() {
         Fragment1 fragment = new Fragment1();
@@ -101,7 +106,7 @@ public class Fragment1 extends Fragment implements TimePickerDialog.OnTimeSetLis
         AppDatabase db = Room.databaseBuilder(getContext(), AppDatabase.class, "database-name").enableMultiInstanceInvalidation().allowMainThreadQueries().build();
 
         // specify an adapter (see also next example)
-        RecyclerView.Adapter mAdapter = new BusRouteAdapter(db.busRouteDao().getAll());
+        RecyclerView.Adapter mAdapter = new BusRouteAdapter(db.busRouteDao().getAll(), this);
         recyclerView.setAdapter(mAdapter);
 
         return view;
@@ -165,5 +170,17 @@ public class Fragment1 extends Fragment implements TimePickerDialog.OnTimeSetLis
         else{
             time.setText(hour + "h" + minute);
         }
+    }
+
+    @Override
+    public void onItemClick(BusRoute item) {
+        idRoute = item.routeId;
+
+        Bundle bundle = new Bundle();
+        bundle.putInt("routeId", idRoute);
+
+        Fragment2 fragment2 = new Fragment2();
+        fragment2.setArguments(bundle);
+        getFragmentManager().beginTransaction().replace(((ViewGroup) getView().getParent()).getId(), fragment2).addToBackStack(null).commit();
     }
 }

@@ -1,5 +1,6 @@
 package fr.istic.mob.busappmaudsaly.GuideResearch;
 
+import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -22,19 +24,24 @@ import androidx.room.Room;
 import fr.istic.mob.busappmaudsaly.Adapter.BusRouteAdapter;
 import fr.istic.mob.busappmaudsaly.R;
 import fr.istic.mob.busappmaudsaly.database.AppDatabase;
+import fr.istic.mob.busappmaudsaly.dialog.DatePickerFragment;
 import fr.istic.mob.busappmaudsaly.dialog.TimePickerFragment;
 
 /**
  * TODO : fragment 1 : selectionneur de date et heure, snipper ligne de bus, et qd ligne semectionné snipper direction
- * TODO : date
  */
 
-public class Fragment1 extends Fragment implements TimePickerDialog.OnTimeSetListener {
+public class Fragment1 extends Fragment implements TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
 
     private TextView time;
+    private TextView date;
 
     private int hour;
     private int minute;
+
+    private int year;
+    private int month;
+    private int day;
 
     public static Fragment1 newInstance() {
         Fragment1 fragment = new Fragment1();
@@ -49,6 +56,10 @@ public class Fragment1 extends Fragment implements TimePickerDialog.OnTimeSetLis
         hour = c.get(Calendar.HOUR_OF_DAY);
         minute = c.get(Calendar.MINUTE);
 
+        year = c.get(Calendar.YEAR);
+        month = c.get(Calendar.MONTH)+ 1;
+        day = c.get(Calendar.DAY_OF_MONTH);
+
     }
 
     @Override
@@ -58,17 +69,22 @@ public class Fragment1 extends Fragment implements TimePickerDialog.OnTimeSetLis
 
         time = view.findViewById(R.id.time);
 
-        if (this.minute < 10){
-            time.setText(hour + "h0" + minute);
-        }
-        else{
-            time.setText(hour + "h" + minute);
-        }
+        date = view.findViewById(R.id.date);
+
+        setTime();
+        setDate();
 
         time.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showTimePickerDialog(view);
+            }
+        });
+
+        date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDatePickerDialog(view);
             }
         });
 
@@ -107,10 +123,42 @@ public class Fragment1 extends Fragment implements TimePickerDialog.OnTimeSetLis
         newFragment.show(getFragmentManager(), "timePicker");
     }
 
+    public void showDatePickerDialog(View v) {
+        DialogFragment newFragment = new DatePickerFragment(this);
+        newFragment.show(getFragmentManager(), "datePicker");
+    }
+
     @Override
     public void onTimeSet(TimePicker timePicker, int hour, int minute) {
         this.hour = hour;
         this.minute = minute;
+    }
+
+    @Override
+    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+        this.year = year;
+        this.month = month + 1;
+        this.day = day;
+
+        setDate();
+    }
+
+    public void setDate(){
+        if(this.day < 10 && this.month < 10){
+            date.setText("0"+day+"/0"+month+"/"+year);
+        }
+        else if (this.day < 10){
+            date.setText("0"+day+"/"+month+"/"+year);
+        }
+        else if (this.month < 10){
+            date.setText(day+"/0"+month+"/"+year);
+        }
+        else {
+            date.setText(day+"/"+month+"/"+year);
+        }
+    }
+
+    public void setTime(){
         if (this.minute < 10){
             time.setText(hour + "h0" + minute);
         }

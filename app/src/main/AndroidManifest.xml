@@ -13,7 +13,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".GuideResearch.GuideActivity"></activity>
+
+        <activity android:name=".GuideResearch.GuideActivity"
+            android:screenOrientation="portrait">
+        </activity>
 
         <service
             android:name=".service.CreateData"
@@ -22,6 +25,7 @@
         <activity
             android:name=".TelechargementActivity"
             android:configChanges="orientation|screenSize" />
+
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize"

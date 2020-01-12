@@ -10,7 +10,6 @@ import android.os.Bundle;
 
 /**
  * TODO : fragement affichés contenant 1, 2 ou 3 en fonction de la conf de l'écran (1 ou 2 tel, 3 tablette)
- * TODO : fragement 2 : apres date, heure direction slectionnées, arret affichés, de l'arrivée au départ
  * TODO : fragement 3 : apres clique sur arret, horraire de bus choisi, direction choisi, arret choisi, heure choisi (jusqua fin de journée)
  * TODO : fragement 4 : clique sur horaire : heures de passage du bus choisi entre l'arret choisi et le terminus
  * TODO : fragement affiche profressionement : apparaissant de droite a gauche, animation de 1 sec

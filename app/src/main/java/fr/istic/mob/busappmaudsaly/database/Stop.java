@@ -14,12 +14,8 @@ public class Stop {
     @ColumnInfo (name = "stop_name")
     public String stopName;
 
-    @ColumnInfo (name = "stop_desc")
-    public String stopDesc;
-
-    public Stop(int stopId, String stopName, String stopDesc) {
+    public Stop(int stopId, String stopName) {
         this.stopId = stopId;
         this.stopName = stopName;
-        this.stopDesc = stopDesc;
     }
 }

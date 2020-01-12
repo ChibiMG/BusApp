@@ -75,7 +75,6 @@ public class CreateData extends IntentService {
         //Recuperation des RecordIDs
         newIDs = getSharedPreferences(getString(R.string.New_Ids),0);
 
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "database-name").enableMultiInstanceInvalidation().build();
     }
 
     //Fonction de la notification channel
@@ -92,10 +91,18 @@ public class CreateData extends IntentService {
     protected void onHandleIntent(Intent intent) {
         receiver = (ResultReceiver) intent.getParcelableExtra("receiver");
 
-        db.clearAllTables();
+        boolean first = true;
 
         try {
             for (Map.Entry<String, String> element : ((Map<String, String>) newIDs.getAll()).entrySet()) {
+                if (first) {
+                    first = false;
+                    db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "database1").enableMultiInstanceInvalidation().build();
+                }
+                else {
+                    db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "database2").enableMultiInstanceInvalidation().build();
+                }
+                db.clearAllTables();
                 //creer utl et connection
                 URL url = new URL(element.getValue());
                 URLConnection connection = url.openConnection();
@@ -274,7 +281,7 @@ public class CreateData extends IntentService {
             db.runInTransaction(new Runnable() {
                 @Override
                 public void run() {
-                    String sql = "INSERT or IGNORE INTO stop (stop_id, stop_name, stop_desc) VALUES (?, ?, ?)";
+                    String sql = "INSERT or IGNORE INTO stop (stop_id, stop_name) VALUES (?, ?)";
                     final SupportSQLiteStatement statement = db.compileStatement(sql);
 
                     parseCsvFile("stops.txt", "(4/5)", new Function<String[], Void>() {
@@ -283,7 +290,6 @@ public class CreateData extends IntentService {
                             statement.clearBindings();
                             statement.bindLong(1, Long.parseLong(line[0]));
                             statement.bindString(2, line[2]);
-                            statement.bindString(3, line[3]);
                             statement.executeInsert();
 
                             return null;

@@ -30,10 +30,6 @@ import fr.istic.mob.busappmaudsaly.database.BusRoute;
 import fr.istic.mob.busappmaudsaly.dialog.DatePickerFragment;
 import fr.istic.mob.busappmaudsaly.dialog.TimePickerFragment;
 
-/**
- * TODO : bundle l'heure et date regarder en bdd comment elle est mise
- */
-
 public class Fragment1 extends Fragment implements TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener, BusRouteAdapter.OnItemClickListener {
 
     private TextView time;
@@ -47,6 +43,7 @@ public class Fragment1 extends Fragment implements TimePickerDialog.OnTimeSetLis
     private int day;
 
     private int idRoute;
+    private int dayOfWeek;
 
     public static Fragment1 newInstance() {
         Fragment1 fragment = new Fragment1();
@@ -103,7 +100,7 @@ public class Fragment1 extends Fragment implements TimePickerDialog.OnTimeSetLis
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        AppDatabase db = Room.databaseBuilder(getContext(), AppDatabase.class, "database-name").enableMultiInstanceInvalidation().allowMainThreadQueries().build();
+        AppDatabase db = Room.databaseBuilder(getContext(), AppDatabase.class, "database1").enableMultiInstanceInvalidation().allowMainThreadQueries().build();
 
         // specify an adapter (see also next example)
         RecyclerView.Adapter mAdapter = new BusRouteAdapter(db.busRouteDao().getAll(), this);
@@ -141,6 +138,11 @@ public class Fragment1 extends Fragment implements TimePickerDialog.OnTimeSetLis
 
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, day);
+        dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
         this.year = year;
         this.month = month + 1;
         this.day = day;
@@ -178,6 +180,11 @@ public class Fragment1 extends Fragment implements TimePickerDialog.OnTimeSetLis
 
         Bundle bundle = new Bundle();
         bundle.putInt("routeId", idRoute);
+        //String date = year + "" + month + "" + day;
+        String date = String.format("%04d%02d%02d", year, month, day);
+        bundle.putInt("date", Integer.parseInt(date));
+        bundle.putString("time", hour + ":" + minute + ":00");
+        bundle.putInt("dayOfWeek", dayOfWeek);
 
         Fragment2 fragment2 = new Fragment2();
         fragment2.setArguments(bundle);

@@ -33,7 +33,8 @@ Il est possible de changer de direction en cliquant sur la direction affichée (
 
 ![](/ligne.jpg)
 
-Exemple pour la ligne C1 :
+Exemple pour la ligne C1 : Liste des arrêts de la ligne C1
+![](/arretligne.jpg)
 A partir de là, nous choisissons l'arrêt voulu, ce qui affichera les horaires disponibles à partir de l'horaire actuel.
 ![](/horaire.jpg)
 

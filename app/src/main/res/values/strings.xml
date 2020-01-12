@@ -9,6 +9,5 @@
     <string name="arret_recherche">Rechercher un arrêt</string>
 
     <string name="title_activity_guide">GuideActivity</string>
-
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="notArret">Pas de nom d\'arrêt</string>
 </resources>

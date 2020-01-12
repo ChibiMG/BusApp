@@ -18,9 +18,6 @@ import fr.istic.mob.busappmaudsaly.database.AppDatabase;
 import fr.istic.mob.busappmaudsaly.database.Stop;
 import fr.istic.mob.busappmaudsaly.database.StopTime;
 
-/**
- * TODO : fragement 3 : apres clique sur arret, horraire de bus choisi, direction choisi, arret choisi, heure choisi (jusqua fin de journée)
-*/
 public class Fragment3 extends Fragment implements HoraireAdapter.OnItemClickListener {
 
     private int idRoute;

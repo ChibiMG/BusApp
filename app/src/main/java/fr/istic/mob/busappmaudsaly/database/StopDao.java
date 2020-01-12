@@ -13,7 +13,7 @@ public interface StopDao {
     @Query("SELECT * FROM Stop")
     List<Stop> getAll();
 
-    @Query("SELECT stop_name FROM Stop")
+    @Query("SELECT DISTINCT stop_name FROM Stop")
     String[] getAllStopName();
 
     @Query("select * from stop\n" +

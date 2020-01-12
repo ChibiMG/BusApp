@@ -28,7 +28,7 @@ import fr.istic.mob.busappmaudsaly.database.AppDatabase;
 import fr.istic.mob.busappmaudsaly.database.Stop;
 import fr.istic.mob.busappmaudsaly.task.SiteConsultationTask;
 
-public class MainActivity extends AppCompatActivity implements ArretAdapter.OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements ArretAdapter.OnItemClickListener, View.OnClickListener {
 
     private Button researchGuide;
 
@@ -37,10 +37,6 @@ public class MainActivity extends AppCompatActivity implements ArretAdapter.OnIt
     private AutoCompleteTextView researchArretText;
 
     private Intent intent;
-
-    /**
-     * TODO : recherche textuel noms arret bus, avec ligne de bus qui y passent (les affichés une fois que ce soit pour aller retour)
-     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,17 +62,27 @@ public class MainActivity extends AppCompatActivity implements ArretAdapter.OnIt
         researchArretText.setThreshold(1);
 
         researchArret = findViewById(R.id.searchButton);
-        researchArret.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "recherche arret : vide actuellement", Toast.LENGTH_LONG).show();
-                //go ??? + researchArretText.getText()
-            }
-        });
+        researchArret.setOnClickListener(this);
     }
 
     @Override
     public void onItemClick(Stop item) {
 
+    }
+
+    @Override
+    public void onClick(View view) {
+        Bundle bundle = new Bundle();
+        String arret = researchArretText.getText().toString();
+        bundle.putString("arret", arret);
+
+        if (!arret.equals("")){
+            intent = new Intent(MainActivity.this, searchArretActivity.class);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        }
+        else{
+            Toast.makeText(this, getString(R.string.notArret), Toast.LENGTH_LONG).show();
+        }
     }
 }

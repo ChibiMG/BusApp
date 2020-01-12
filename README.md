@@ -9,7 +9,7 @@ Le projet android en M1 MIAGE à l'université de Rennes 1, porte sur la créati
 
 Lancer l'application "BusAppMaudSaly"
 
-Une notification indiquera qu'une mise à jour des données est disponible, lorsque l'on clique dessus, le téléchargement se lancera.
+Une notification indiquera qu'une mise à jour des données est disponible, lorsque l'on clique dessus, le téléchargement se lance.
 Une fois le téléchargement fini, relancer l'application.
 
 ![](/install.jpg)
@@ -21,15 +21,15 @@ Une barre de recherche pour y entrer un arrêt ou bien, un bouton pour une reche
 
 ## Bouton "Recherche par arrêt"
 
-Cette fonctionnalité c'est pas encore en service.
+Cette fonctionnalité n'est pas encore en service.
 
 
 ## Bouton "Recherche guidée"
 
-Lors d'une recherche quidée, nous retrouvons la date, l'heure et toutes les lignes de bus disponibles.
+Lors d'une recherche guidée, nous retrouvons la date, l'heure et toutes les lignes de bus disponibles.
 
-En cliquant sur une ligne de bus, une nouvelle page s'ouvre avec, en haut, les directions en bleu. En dessous se trouve tous les arrêts de la ligne choisie.
-Il est possible de changer de direction en cliquant sur la direction affichée ( elle s'inversera lors du clic).
+En cliquant sur une ligne de bus, une nouvelle page s'ouvre avec, en haut les directions écritent en bleu. En dessous se trouve tous les arrêts de la ligne choisie.
+Il est possible de changer de direction en cliquant sur la direction affichée (elle s'inversera lors du clic).
 Exemple pour la ligne C1 :
 ![](/ligne.jpg)
 

@@ -20,21 +20,29 @@ Une barre de recherche pour y entrer un arrêt ou bien, un bouton pour une reche
 ![](/accueil.jpg)
 
 ## Bouton "Recherche par arrêt"
+Dans un premier temps, il faut entrer le nom d'un arrêt, ici "Tournebride".
 
-Cette fonctionnalité n'est pas encore en service.
+![](/rechTourne.jpg)
 
+Après avoir validé l'arrêt (en appuyant sur "Recherche par arrêt"), la liste des lignes de bus passant par cet arrêt va s'afficher.
+
+![](/ligneTournebride.jpg)
 
 ## Bouton "Recherche guidée"
 
 Lors d'une recherche guidée, nous retrouvons la date, l'heure et toutes les lignes de bus disponibles.
 
 En cliquant sur une ligne de bus, une nouvelle page s'ouvre avec, en haut les directions écritent en bleu. En dessous se trouve tous les arrêts de la ligne choisie.
+
 Il est possible de changer de direction en cliquant sur la direction affichée (elle s'inversera lors du clic).
 
 ![](/ligne.jpg)
 
+
 Exemple pour la ligne C1 : Liste des arrêts de la ligne C1
 ![](/arretligne.jpg)
+
+
 A partir de là, nous choisissons l'arrêt voulu, ce qui affichera les horaires disponibles à partir de l'horaire actuel.
 ![](/horaire.jpg)
 

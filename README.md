@@ -36,3 +36,7 @@ Il est possible de changer de direction en cliquant sur la direction affichée (
 Exemple pour la ligne C1 :
 A partir de là, nous choisissons l'arrêt voulu, ce qui affichera les horaires disponibles à partir de l'horaire actuel.
 ![](/horaire.jpg)
+
+Si nous cliquons sur l'horaire attendu nous pouvons lire l'heure de chaque arrêt suivant l'arrêt sélectionné au début.
+![](/heure suivant.jpg)
+

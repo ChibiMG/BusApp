@@ -13,6 +13,9 @@ public interface StopDao {
     @Query("SELECT * FROM Stop")
     List<Stop> getAll();
 
+    @Query("SELECT stop_name FROM Stop")
+    String[] getAllStopName();
+
     @Query("select * from stop\n" +
             "natural join stop_time\n" +
             "where trip_id = (select trip_id from stop_time\n" +

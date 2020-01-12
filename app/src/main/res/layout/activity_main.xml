@@ -14,21 +14,6 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/firstLL"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <Button
-                android:id="@+id/searchGuideButton"
-                android:layout_width="match_parent"
-                android:layout_height="73dp"
-                android:text="@string/recherche_guidee" />
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/secondLL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -40,17 +25,34 @@
                 android:id="@+id/searchText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:autofillHints=""
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:text="@string/arret_recherche"
-                android:autofillHints="" />
+                android:hint="@string/arret_recherche"
+                android:inputType="textPersonName" />
 
             <Button
                 android:id="@+id/searchButton"
                 android:layout_width="match_parent"
                 android:layout_height="73dp"
+                android:backgroundTint="#3F51B5"
                 android:text="@string/recherche_arret" />
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/firstLL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/searchGuideButton"
+                android:layout_width="match_parent"
+                android:layout_height="73dp"
+                android:backgroundTint="#00BCD4"
+                android:text="@string/recherche_guidee" />
         </LinearLayout>
 
     </LinearLayout>

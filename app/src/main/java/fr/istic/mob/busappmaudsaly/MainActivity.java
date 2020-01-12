@@ -3,6 +3,8 @@ package fr.istic.mob.busappmaudsaly;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -17,18 +19,22 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.room.Room;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
+import fr.istic.mob.busappmaudsaly.Adapter.ArretAdapter;
 import fr.istic.mob.busappmaudsaly.GuideResearch.GuideActivity;
+import fr.istic.mob.busappmaudsaly.database.AppDatabase;
+import fr.istic.mob.busappmaudsaly.database.Stop;
 import fr.istic.mob.busappmaudsaly.task.SiteConsultationTask;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ArretAdapter.OnItemClickListener {
 
     private Button researchGuide;
 
     private Button researchArret;
 
-    private EditText researchArretText;
+    private AutoCompleteTextView researchArretText;
 
     private Intent intent;
 
@@ -53,7 +59,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        researchArretText = findViewById(R.id.searchText);
+        AppDatabase db = Room.databaseBuilder(this, AppDatabase.class, "database1").enableMultiInstanceInvalidation().allowMainThreadQueries().build();
+        //ArrayAdapter arretAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, db.stopDao().getAllStopName());
+        //researchArretText = findViewById(R.id.searchText);
+        //researchArretText.setAdapter(arretAdapter);
+        //researchArretText.setThreshold(1);
 
         researchArret = findViewById(R.id.searchButton);
         researchArret.setOnClickListener(new View.OnClickListener() {
@@ -63,5 +73,10 @@ public class MainActivity extends AppCompatActivity {
                 //go ??? + researchArretText.getText()
             }
         });
+    }
+
+    @Override
+    public void onItemClick(Stop item) {
+
     }
 }

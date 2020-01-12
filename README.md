@@ -30,8 +30,9 @@ Lors d'une recherche guidée, nous retrouvons la date, l'heure et toutes les lig
 
 En cliquant sur une ligne de bus, une nouvelle page s'ouvre avec, en haut les directions écritent en bleu. En dessous se trouve tous les arrêts de la ligne choisie.
 Il est possible de changer de direction en cliquant sur la direction affichée (elle s'inversera lors du clic).
-Exemple pour la ligne C1 :
+
 ![](/ligne.jpg)
 
+Exemple pour la ligne C1 :
 A partir de là, nous choisissons l'arrêt voulu, ce qui affichera les horaires disponibles à partir de l'horaire actuel.
 ![](/horaire.jpg)

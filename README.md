@@ -38,5 +38,5 @@ A partir de là, nous choisissons l'arrêt voulu, ce qui affichera les horaires 
 ![](/horaire.jpg)
 
 Si nous cliquons sur l'horaire attendu nous pouvons lire l'heure de chaque arrêt suivant l'arrêt sélectionné au début.
-![](/heure suivant.jpg)
+![](/heuresuivant.jpg)
 

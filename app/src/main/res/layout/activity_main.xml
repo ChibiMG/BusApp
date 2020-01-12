@@ -21,21 +21,19 @@
             android:gravity="center"
             android:orientation="vertical">
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/searchText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:autofillHints=""
-                android:ems="10"
-                android:hint="@string/arret_recherche"
-                android:inputType="textPersonName" />
+                android:hint="@string/arret_recherche" />
 
             <Button
                 android:id="@+id/searchButton"
                 android:layout_width="match_parent"
                 android:layout_height="73dp"
                 android:backgroundTint="#3F51B5"
-                android:text="@string/recherche_arret" />
+                android:text="@string/recherche_arret"
+                android:textColor="#FFFFFF" />
 
         </LinearLayout>
 

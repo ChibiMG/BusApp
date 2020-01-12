@@ -60,10 +60,10 @@ public class MainActivity extends AppCompatActivity implements ArretAdapter.OnIt
         });
 
         AppDatabase db = Room.databaseBuilder(this, AppDatabase.class, "database1").enableMultiInstanceInvalidation().allowMainThreadQueries().build();
-        //ArrayAdapter arretAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, db.stopDao().getAllStopName());
-        //researchArretText = findViewById(R.id.searchText);
-        //researchArretText.setAdapter(arretAdapter);
-        //researchArretText.setThreshold(1);
+        ArrayAdapter arretAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, db.stopDao().getAllStopName());
+        researchArretText = findViewById(R.id.searchText);
+        researchArretText.setAdapter(arretAdapter);
+        researchArretText.setThreshold(1);
 
         researchArret = findViewById(R.id.searchButton);
         researchArret.setOnClickListener(new View.OnClickListener() {

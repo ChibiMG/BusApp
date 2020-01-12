@@ -18,7 +18,7 @@ public interface StopDao {
             "where trip_id = (select trip_id from stop_time\n" +
             "natural join trip\n" +
             "natural join calendar\n" +
-            "where (sunday = (:dayOfWeek = 1) or monday = (:dayOfWeek = 2) or tuesday = (:dayOfWeek = 3) or wednesday = (:dayOfWeek = 4) or thursday = (:dayOfWeek = 5) or friday = (:dayOfWeek = 6) or saturday = (:dayOfWeek = 7))\n" +
+            "where (sunday = :sunday or monday = :monday or tuesday = :tuesday or wednesday = :wednesday or thursday = :thursday or friday = :friday or saturday = :saturday)\n" +
             "and start_date <= :currentDate\n" +
             "and route_id = :currentRouteId\n" +
             "and direction_id = :currentDirection\n" +
@@ -26,7 +26,7 @@ public interface StopDao {
             "order by arrival_time\n" +
             "limit 1)\n" +
             "order by arrival_time")
-    List<Stop> getBusArret(int dayOfWeek, int currentDate, int currentRouteId, int currentDirection, String currentTime);
+    List<Stop> getBusArret(int currentDate, int currentRouteId, int currentDirection, String currentTime, int sunday, int monday, int tuesday, int wednesday, int thursday, int friday, int saturday);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<Stop> stops);

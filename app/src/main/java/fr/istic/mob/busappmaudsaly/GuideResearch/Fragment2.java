@@ -24,10 +24,6 @@ import fr.istic.mob.busappmaudsaly.R;
 import fr.istic.mob.busappmaudsaly.database.AppDatabase;
 import fr.istic.mob.busappmaudsaly.database.Stop;
 
-/**
- * TODO : fragement 2 : apres date, heure direction slectionnées, arret affichés, de l'arrivée au départ + direction
- */
-
 public class Fragment2 extends Fragment implements ArretAdapter.OnItemClickListener {
 
     private int idRoute;
@@ -41,6 +37,7 @@ public class Fragment2 extends Fragment implements ArretAdapter.OnItemClickListe
     private List<Stop> donnees;
     private AppDatabase db;
     private ArretAdapter mAdapter;
+    private int idStop;
 
     public Fragment2() {
     }
@@ -112,12 +109,20 @@ public class Fragment2 extends Fragment implements ArretAdapter.OnItemClickListe
 
     @Override
     public void onItemClick(Stop item) {
+        idStop = item.stopId;
 
+        Bundle bundle = getArguments();
+        bundle.putInt("stopId", idStop);
+        bundle.putInt("direction", currentDirection);
+
+        Fragment3 fragment3 = new Fragment3();
+        fragment3.setArguments(bundle);
+        getFragmentManager().beginTransaction().replace(((ViewGroup) getView().getParent()).getId(), fragment3).addToBackStack(null).commit();
     }
 
     private void changeDirection(){
         currentDirection = 1 - currentDirection;
-        List<Stop> donnees2 = db.stopDao().getBusArret(dayOfWeek, date, idRoute, currentDirection, time);
+        List<Stop> donnees2 = db.stopDao().getBusArret(date, idRoute, currentDirection, time, dayOfWeek == 1? 1 : 2, dayOfWeek == 2? 1 : 2, dayOfWeek == 3? 1 : 2, dayOfWeek == 4? 1 : 2, dayOfWeek == 5? 1 : 2, dayOfWeek == 6? 1 : 2, dayOfWeek == 7? 1 : 2);
         donnees.clear();
         donnees.addAll(donnees2);
         if (mAdapter != null){

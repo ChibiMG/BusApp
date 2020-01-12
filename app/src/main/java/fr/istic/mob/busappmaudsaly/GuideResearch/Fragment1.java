@@ -61,6 +61,7 @@ public class Fragment1 extends Fragment implements TimePickerDialog.OnTimeSetLis
         year = c.get(Calendar.YEAR);
         month = c.get(Calendar.MONTH)+ 1;
         day = c.get(Calendar.DAY_OF_MONTH);
+        dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
 
     }
 
@@ -180,7 +181,6 @@ public class Fragment1 extends Fragment implements TimePickerDialog.OnTimeSetLis
 
         Bundle bundle = new Bundle();
         bundle.putInt("routeId", idRoute);
-        //String date = year + "" + month + "" + day;
         String date = String.format("%04d%02d%02d", year, month, day);
         bundle.putInt("date", Integer.parseInt(date));
         bundle.putString("time", hour + ":" + minute + ":00");
